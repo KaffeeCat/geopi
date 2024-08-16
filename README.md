@@ -39,7 +39,7 @@ lat = 118.79
 lng = 32.06
 
 # 获取所在地址
-ret = geopi.city_search(118.79, 32.06)
+ret = geopi.city_search(lat, lng)
 print(ret)
 ```
 
