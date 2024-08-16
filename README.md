@@ -19,7 +19,12 @@
 ## 安装
 
 ```bash
-pip install -i https://test.pypi.org/simple/ geopi
+pip install geopi
+```
+或者
+
+```bash
+pip install geopi -i https://test.pypi.org/simple/
 ```
 
 ## 使用
