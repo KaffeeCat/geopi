@@ -1,10 +1,20 @@
 # GeoPi=3.14!
 
- 面向中国的时空位置数据处理工具包
+![](https://cdn.icon-icons.com/icons2/1144/PNG/96/pinumber1_80899.png)
 
-[Github链接地址](https://github.com/KaffeeCat/geopi)
+ #### 面向中国的时空位置数据处理工具包
 
-[pypi.org链接地址](https://test.pypi.org/project/geopi/0.0.1/)
+ 离线环境下，无需联网，即可快速获取地理坐标点（经纬度）所在位置点（省市区县），查询速度毫秒级。
+
+[:octocat: Github链接地址](https://github.com/KaffeeCat/geopi)
+
+[:rocket: pypi.org链接地址](https://test.pypi.org/project/geopi/0.0.1/)
+
+
+## 功能
+
+获取地理坐标点（经纬度）所在位置点（省市区县）
+> 中国地区数据来源于阿里云DataV.GeoAtlas，确保地理数据的准确性，地图坐标系采用高德坐标系。
 
 ## 安装
 
@@ -23,14 +33,12 @@ geopi = GeoPi()
 lat = 118.79
 lng = 32.06
 
-# 获取地址
+# 获取所在地址
 ret = geopi.city_search(118.79, 32.06)
-print(ret['province'][0])
-print(ret['city'][0])
-print(ret['area'][0])
+print(ret)
 ```
 
-输出经纬度坐标所在为支点：
+输出经纬度坐标所在位置点（省市区县）：
 
 ```python
 {
