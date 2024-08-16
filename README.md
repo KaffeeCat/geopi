@@ -1,12 +1,13 @@
-# geopi
- 时空位置数据处理工具包
+# GeoPi=3.14!
 
-[GeoPi on Github](https://github.com/KaffeeCat/geopi)
+ 面向中国的时空位置数据处理工具包
+
+[Github链接地址](https://github.com/KaffeeCat/geopi)
 
 ## 安装
 
 ```bash
-pip install geopi
+pip install -i https://test.pypi.org/simple/ geopi==0.0.1
 ```
 
 ## 使用
@@ -25,3 +26,14 @@ ret = geopi.city_search(118.79, 32.06)
 print(ret['province'][0])
 print(ret['city'][0])
 print(ret['area'][0])
+```
+
+输出经纬度坐标所在为支点：
+
+```python
+{
+    'province': ['江苏省', '320000'], 
+    'city': ['南京市', '320100'], 
+    'area': ['玄武区', '320102']
+}
+```
