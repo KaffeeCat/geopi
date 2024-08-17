@@ -8,7 +8,9 @@
 
 :octocat: [Github链接地址](https://github.com/KaffeeCat/geopi)
 
-:rocket: [pypi.org链接地址](https://test.pypi.org/project/geopi/0.0.1/)
+:rocket: [pypi.org链接地址](https://pypi.org/project/geopi/)
+
+:alien: [test.pypi.org链接地址](https://test.pypi.org/project/geopi/)
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![PyPI](https://img.shields.io/pypi/v/geopi)
