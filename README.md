@@ -92,7 +92,7 @@ gdf = GeoDataFrame({'geometry': [province_boundary, city_boundary, area_boundary
 ax = gdf.plot(color=['#4A90E2', '#50E3C2', '#B8E986'])
 plt.xlabel('Longitude')
 plt.ylabel('Latitude')
-plt.title('Boundary of China')
+plt.title('Boundary of Province/City/Area')
 
 # 在地图上绘制经纬度位置点
 plt.scatter(lat, lng, color='#D2691E', marker='*', s=100, zorder=10, label='Location')
