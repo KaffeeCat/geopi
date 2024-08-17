@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="geopi",
-    version="0.0.8",
+    version="0.0.9",
     author="author",
     author_email="author@example.com",
     description="A small example package",
