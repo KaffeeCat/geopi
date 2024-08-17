@@ -37,7 +37,7 @@ class GeoPi:
             pass
         
         self.city_data = None
-        with open(CITYDICT_FILE, 'r') as f:
+        with open(CITYDICT_FILE, 'r', encoding='utf-8') as f:
             self.city_data = json.load(f)
             
         if not os.path.exists(BOUNDARY_PATH):
@@ -86,7 +86,7 @@ class GeoPi:
     def get_boundary_data(self, code):
         if code not in self.boundary_kv_cache:
             try:
-                with open(f"{BOUNDARY_PATH}/{code}.json", 'r') as f:
+                with open(f"{BOUNDARY_PATH}/{code}.json", 'r', encoding='utf-8') as f:
                     data = json.load(f)
                     features = data['features']
                     return shape(features[0]['geometry'])
@@ -99,7 +99,8 @@ class GeoPi:
     
     # 判断位置点是否在指定编码的区域内
     def is_point_in_region(self, pt, code):
-        if (bound := self.get_boundary_data(code)) != None:
+        bound = self.get_boundary_data(code)
+        if bound != None:
             if pt.within(bound):
                 return True
         return False
@@ -107,9 +108,6 @@ class GeoPi:
     def city_search(self, lat, lng):
         
         pt = Point(lat, lng)
-
-        # 根据位置点与各省中心的距离远近，对省进行排序
-        #sorted_data = sorted(self.boundary_kv_cache, key=lambda x: x['centroid'].distance(pt))
 
         # 先判断在哪个省
         for province in self.city_data:
