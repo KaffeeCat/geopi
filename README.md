@@ -4,12 +4,18 @@
 
  #### 面向中国的时空位置数据处理工具包
 
- 离线环境下，无需联网，即可快速获取地理坐标点（经纬度）所在位置点（省市区县），查询速度毫秒级。
+ 可在离线环境下，无需联网，即可快速获取地理坐标点（经纬度）所在位置点（省市区县），查询速度毫秒级。
 
 [:octocat: Github链接地址](https://github.com/KaffeeCat/geopi)
 
 [:rocket: pypi.org链接地址](https://test.pypi.org/project/geopi/0.0.1/)
 
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![PyPI](https://img.shields.io/pypi/v/geopi)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/geopi)
+![PyPI - Downloads](https://img.shields.io/pypi/dd/geopi)
+![PyPI - License](https://img.shields.io/pypi/l/geopi)
+![PyPI - Implementation](https://img.shields.io/pypi/implementation/geopi)
 
 ## 1. 功能
 
@@ -58,11 +64,24 @@ print(ret)
 ```bash
 pip install geopandas
 ```
-或者
 
-以下代码对第3节中的经纬度坐标所在区域进行可视化：
+以下代码围绕第3节中经纬度坐标查询所在区域的例子，进一步进行地图可视化：
 
 ```python
+
+from geopi import GeoPi
+from geopandas import GeoDataFrame
+import matplotlib.pyplot as plt
+
+geopi = GeoPi()
+
+# 设置要查询的经纬度坐标
+lat, lng = 118.79, 32.06
+
+# 获取所在地址
+ret = geopi.city_search(lat, lng)
+
+# 获取经纬度坐标所在区域的边界数据
 province_boundary = geopi.get_boundary_data(ret['province'][1])
 city_boundary = geopi.get_boundary_data(ret['city'][1])
 area_boundary = geopi.get_boundary_data(ret['area'][1])
@@ -73,11 +92,10 @@ plt.xlabel('Longitude')
 plt.ylabel('Latitude')
 plt.title('Boundary of China')
 
-# Draw the point of lat,lng
+# 在地图上绘制经纬度位置点
 plt.scatter(lat, lng, color='#D2691E', marker='*', s=100, zorder=10, label='Location')
 ax.legend()
+plt.show()
 
-# Save the figure
-plt.savefig('boundary.png')
 ```
-![boundary](https://github.com/KaffeeCat/geopi/blob/main/boundary.png)
+![boundary](https://raw.githubusercontent.com/KaffeeCat/geopi/main/images/visualize.png)
