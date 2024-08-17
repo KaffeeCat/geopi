@@ -6,9 +6,9 @@
 
  可在离线环境下，无需联网，即可快速获取地理坐标点（经纬度）所在位置点（省市区县），查询速度毫秒级。
 
-[:octocat: Github链接地址](https://github.com/KaffeeCat/geopi)
+:octocat: [Github链接地址](https://github.com/KaffeeCat/geopi)
 
-[:rocket: pypi.org链接地址](https://test.pypi.org/project/geopi/0.0.1/)
+:rocket: [pypi.org链接地址](https://test.pypi.org/project/geopi/0.0.1/)
 
 ![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
 ![PyPI](https://img.shields.io/pypi/v/geopi)
