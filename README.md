@@ -43,10 +43,10 @@ from geopi import GeoPi
 geopi = GeoPi()
 
 # 设置要查询的经纬度坐标
-lat, lng = 118.79, 32.06
+lat, lng = 32.043787, 118.797437
 
 # 获取所在地址
-ret = geopi.city_search(lat, lng)
+ret = geopi.search_city(lat, lng)
 print(ret)
 ```
 
@@ -62,11 +62,6 @@ print(ret)
 
 ## 4. 可视化
 
-首先确保安装了GeoPandas，你可以通过下面命令进行安装
-```bash
-pip install geopandas
-```
-
 以下代码围绕第3节中经纬度坐标查询所在区域的例子，进一步进行地图可视化：
 
 ```python
@@ -78,10 +73,10 @@ import matplotlib.pyplot as plt
 geopi = GeoPi()
 
 # 设置要查询的经纬度坐标
-lat, lng = 118.79, 32.06
+lat, lng = 32.043787, 118.797437
 
 # 获取所在地址
-ret = geopi.city_search(lat, lng)
+ret = geopi.search_city(lat, lng)
 
 # 获取经纬度坐标所在区域的边界数据
 province_boundary = geopi.get_boundary_data(ret['province'][1])
@@ -95,9 +90,57 @@ plt.ylabel('Latitude')
 plt.title('Boundary of Province/City/Area')
 
 # 在地图上绘制经纬度位置点
-plt.scatter(lat, lng, color='#D2691E', marker='*', s=100, zorder=10, label='Location')
+plt.scatter(lng, lat, color='#D2691E', marker='*', s=100, zorder=10, label='Location')
 ax.legend()
 plt.show()
 
 ```
 ![boundary](https://raw.githubusercontent.com/KaffeeCat/geopi/main/images/visualize.png)
+
+## 5. 位置附近POI查询
+
+以下代码围绕第4节中经纬度坐标查询所在区域的例子，进一步搜索附近的POI地点：
+
+```python
+from geopi import GeoPi
+from geopandas import GeoDataFrame
+import matplotlib.pyplot as plt
+
+geopi = GeoPi()
+
+# 设置要查询的经纬度坐标
+lat, lng = 32.043787, 118.797437
+
+# 查询经纬度位置附近的POI信息
+ret = geopi.search_nearest_poi(lat, lng, topk=10)
+
+```
+
+## 6. 通过folium对位置附近POI进行可视化
+
+```python
+from geopi import GeoPi
+from geopandas import GeoDataFrame
+import matplotlib.pyplot as plt
+
+geopi = GeoPi()
+
+# 设置要查询的经纬度坐标
+lat, lng = 32.043787, 118.797437
+
+# 查询经纬度位置附近的POI信息
+ret = geopi.search_nearest_poi(lat, lng, topk=10)
+
+map = folium.Map(location=[lat, lng], 
+           tiles='https://webrd02.is.autonavi.com/appmaptile?lang=zh_en&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+           attr='高德-中英文对照',
+           zoom_start=15)
+
+folium.Marker(location=[lat, lng], icon=folium.Icon(color='red')).add_to(map)
+
+for index, row in ret.iterrows():
+    pt = row['gcj']
+    folium.Marker(location=[pt.y, pt.x], icon=folium.Icon(color='blue'), popup=row['name']).add_to(map)
+map
+
+```

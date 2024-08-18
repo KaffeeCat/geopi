@@ -1,5 +1,7 @@
+import geopandas as gpd
 from shapely.geometry import shape, Point
-import requests
+from coord_convert.transform import gcj2wgs, wgs2gcj
+import pyproj
 import json
 import time
 import os
@@ -9,24 +11,8 @@ CITYDICT_FILE = './data/city_dict.json'
 CITYDICT_FILE = os.path.join(PROJECT_DIR, CITYDICT_FILE)
 BOUNDARY_PATH = './data/city_boundary'
 BOUNDARY_PATH = os.path.join(PROJECT_DIR, BOUNDARY_PATH)
-
-# 下载json文件到指定路径
-def download_json(code, path):
-
-    # 判断文件是否存在，避免重复下载
-    if os.path.exists(f"{path}/{code}.json"):
-        return True
-        
-    # 如果不存在则下载
-    url = f"https://geo.datav.aliyun.com/areas_v3/bound/{code}.json"
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        with open(f"{path}/{code}.json", 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-            return True
-    
-    return False
+CITY_SHP_FILE = './data/city_shp/gis_osm_pois_free_1.shp'
+CITY_SHP_FILE = os.path.join(PROJECT_DIR, CITY_SHP_FILE)
                 
 class GeoPi:
     
@@ -51,36 +37,12 @@ class GeoPi:
             if province_data != None:
                 self.boundary_kv_cache[province_code] = province_data
 
-    def download_boundary(self, province_only=False):
-        # try to download boundary data
-        province_num = len(self.city_data)
-        for i, province in enumerate(self.city_data):
-
-            # 获取省级行政区边界
-            province_name = province['name']
-            province_code = province['code']
-            print(f"\r{i+1}/{province_num} {province_name} {province_code} is downloading")
-            download_json(province_code, BOUNDARY_PATH)
-
-            if province_only:
-                continue
-
-            # 遍历市级行政区边界
-            cityList = province['cityList']
-            for city in cityList:
-                city_code = city['code']
-                download_json(city_code, BOUNDARY_PATH)
-
-                # 遍历县级行政区边界
-                areas = city['areaList']
-                for area in areas:
-                    area_code = area['code']
-                    ret = download_json(area_code, BOUNDARY_PATH)
-                    print("✔" if ret else "✖", end="")
-
-            print("")
-
-        print("Download finished")
+        # 创建高德坐标系（GCJ-02）和 WGS84 坐标系的转换对象
+        self.gcj_to_wgs = pyproj.Transformer.from_crs(
+            "epsg:4490",  # GCJ-02 坐标系的 EPSG 代码
+            "epsg:4326",  # WGS84 坐标系的 EPSG 代码
+            always_xy=True
+        )
 
     # 通过区域编码，从KV库中查询区域边界
     def get_boundary_data(self, code):
@@ -91,11 +53,9 @@ class GeoPi:
                     features = data['features']
                     return shape(features[0]['geometry'])
             except FileNotFoundError as e:
-                if download_json(code, BOUNDARY_PATH):
-                    return self.get_boundary_data(code)
+                return None
         else:
             return self.boundary_kv_cache[code]
-        return None
     
     # 判断位置点是否在指定编码的区域内
     def is_point_in_region(self, pt, code):
@@ -105,9 +65,10 @@ class GeoPi:
                 return True
         return False
 
-    def city_search(self, lat, lng):
+    # 查询经纬度为位置所在的省市区
+    def search_city(self, lat, lng):
         
-        pt = Point(lat, lng)
+        pt = Point(lng, lat)
 
         # 先判断在哪个省
         for province in self.city_data:
@@ -132,16 +93,50 @@ class GeoPi:
                                     'area': [area['name'], area_code]
                                     }
         return None
+    
+    # 查询经纬度位置附近的POI信息
+    def search_nearest_poi(self, lat, lng, topk=10, delta=0.05):
 
+        def transform_geometry(row):
+            lat, lng = row.wgs84.y, row.wgs84.x
+            gcj_lng, gcj_lat = wgs2gcj(lng, lat)
+            return Point(gcj_lng, gcj_lat)
+        
+        # 转换为 WGS84 坐标系
+        wgs_lng, wgs_lat = gcj2wgs(lng, lat)
+
+        # 加载地理数据框
+        bbox = (wgs_lng-delta, wgs_lat-delta, wgs_lng+delta, wgs_lat+delta)
+        gdf = gpd.read_file(CITY_SHP_FILE, bbox=bbox)
+        gdf = gdf[gdf['name'].notnull()]
+
+        # 将 geometry 列转换为 WGS84 坐标系，并转化为 GCJ02 坐标系
+        gdf = gdf.rename(columns={'geometry': 'wgs84'})
+        gdf['gcj'] = gdf.apply(transform_geometry, axis=1)
+
+        pt = Point(wgs_lng, wgs_lat)
+        gdf['dist'] = gdf.wgs84.distance(pt)
+        return gdf.nsmallest(topk, 'dist')
 
 if __name__ == '__main__':
     geopi = GeoPi()
 
+    lat, lng = 32.043787, 118.797437
+
+    # 查询经纬度为位置所在的省市区
     start_time = time.time()
-    ret = geopi.city_search(118.79, 32.06)
+    ret = geopi.search_city(lat, lng)
     end_time = time.time()
 
     elapsed_time = (end_time - start_time) * 1000
     print(f"Executed in {elapsed_time:.2f} ms")
+    print(ret)
 
+    # 查询经纬度位置附近的POI信息
+    start_time = time.time()
+    ret = geopi.search_nearest_poi(lat, lng, topk=10)
+    end_time = time.time()
+
+    elapsed_time = (end_time - start_time) * 1000
+    print(f"Executed in {elapsed_time:.2f} ms")
     print(ret)

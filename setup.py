@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="geopi",
-    version="0.0.9",
+    version="0.1.2",
     author="author",
     author_email="author@example.com",
     description="A small example package",
@@ -15,7 +15,7 @@ setuptools.setup(
         if requirement.strip() and not requirement.startswith('-')
     ],
     package_data={
-        'geopi': ['data/*.json', 'data/city_boundary/*.json'],
+        'geopi': ['data/*.json', 'data/city_boundary/*.json', 'data/city_shp/*.*'],
     },
     include_package_data=True,
     classifiers=[
