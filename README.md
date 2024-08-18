@@ -1,4 +1,4 @@
-# GeoPi=3.14!
+# GeoPi = 3.14!
 
 ![](https://cdn.icon-icons.com/icons2/1144/PNG/96/pinumber1_80899.png)
 
@@ -22,7 +22,8 @@
 ## 1. 功能
 
 获取地理坐标点（经纬度）所在位置点（省市区县）
-> 中国地区数据来源于阿里云DataV.GeoAtlas，确保地理数据的准确性，地图坐标系采用高德坐标系。
+- 中国地区数据来源于阿里云DataV.GeoAtlas，确保地理数据的准确性，地图坐标系采用GCJ02高德坐标系。
+- POI数据来源于OSM数据, 坐标系已从WGS84转为GCJ02高德坐标系，确保区域数据与POI数据的坐标系一致性。
 
 ## 2. 安装
 
@@ -36,6 +37,8 @@ pip install geopi -i https://test.pypi.org/simple/
 ```
 
 ## 3. 使用
+
+查询经纬度坐标所在位置点（省市区县）：
 
 ```python
 from geopi import GeoPi
@@ -62,7 +65,7 @@ print(ret)
 
 ## 4. 可视化
 
-以下代码围绕第3节中经纬度坐标查询所在区域的例子，进一步进行地图可视化：
+对经纬度坐标所在位置点（省市区县）进行可视化：
 
 ```python
 
@@ -99,7 +102,7 @@ plt.show()
 
 ## 5. 位置附近POI查询
 
-以下代码围绕第4节中经纬度坐标查询所在区域的例子，进一步搜索附近的POI地点：
+查询经纬度坐标所在位置点附近的POI地点：
 
 ```python
 from geopi import GeoPi
@@ -116,7 +119,13 @@ ret = geopi.search_nearest_poi(lat, lng, topk=10)
 
 ```
 
+输出附近POI数据，fclass为POI类型，name为POI名称，wgs84和gcj为POI在不同坐标系的坐标点,dist为距离查询位置点的距离：
+
+![pois](https://raw.githubusercontent.com/KaffeeCat/geopi/main/images/pois.png)
+
 ## 6. 通过folium对位置附近POI进行可视化
+
+基于地图可视化可以更直观的查看位置附近的POI信息：
 
 ```python
 from geopi import GeoPi
@@ -142,5 +151,13 @@ for index, row in ret.iterrows():
     pt = row['gcj']
     folium.Marker(location=[pt.y, pt.x], icon=folium.Icon(color='blue'), popup=row['name']).add_to(map)
 map
-
 ```
+
+位置附近的POI在地图上的可视化：
+
+![pois](https://raw.githubusercontent.com/KaffeeCat/geopi/main/images/pois_on_map.png)
+
+
+## License
+
+This project is released under the [MIT License](LICENSE).
