@@ -98,7 +98,7 @@ ax.legend()
 plt.show()
 
 ```
-![boundary](https://raw.githubusercontent.com/KaffeeCat/geopi/main/images/visualize.png)
+![boundary](https://picx.zhimg.com/80/v2-2c6be5556643541cb83b29e009ea3879_720w.png?source=d16d100b)
 
 ## 5. 位置附近POI查询
 
@@ -121,7 +121,7 @@ ret = geopi.search_nearest_poi(lat, lng, topk=10)
 
 输出附近POI数据，fclass为POI类型，name为POI名称，wgs84和gcj为POI在不同坐标系的坐标点,dist为距离查询位置点的距离，距离单位为米(Meters)：
 
-![pois](https://raw.githubusercontent.com/KaffeeCat/geopi/main/images/pois.png)
+![pois](https://pic1.zhimg.com/80/v2-df0d34662debe287f9de00b3d60a1390_720w.png?source=d16d100b)
 
 ## 6. 通过folium对位置附近POI进行可视化
 
@@ -155,7 +155,7 @@ map
 
 位置附近的POI在地图上的可视化：
 
-![pois](https://raw.githubusercontent.com/KaffeeCat/geopi/main/images/pois_on_map.png)
+![pois](https://picx.zhimg.com/80/v2-e73b4fb530d2d22a36c47b69b0b47b9c_720w.png?source=d16d100b)
 
 
 ## License
