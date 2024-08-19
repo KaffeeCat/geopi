@@ -1,6 +1,7 @@
 import geopandas as gpd
 from shapely.geometry import shape, Point
 from coord_convert.transform import gcj2wgs, wgs2gcj
+from geopy.distance import geodesic
 import pyproj
 import json
 import time
@@ -114,8 +115,10 @@ class GeoPi:
         gdf = gdf.rename(columns={'geometry': 'wgs84'})
         gdf['gcj'] = gdf.apply(transform_geometry, axis=1)
 
-        pt = Point(wgs_lng, wgs_lat)
-        gdf['dist'] = gdf.wgs84.distance(pt)
+        # 计算位置点距离每个POI的距离
+        #pt = Point(wgs_lng, wgs_lat)
+        #gdf['dist'] = gdf.wgs84.distance(pt) * 10000
+        gdf['dist'] = gdf.wgs84.apply(lambda geom: geodesic((wgs_lat, wgs_lng), (geom.y, geom.x)).meters)
         return gdf.nsmallest(topk, 'dist')
 
 if __name__ == '__main__':

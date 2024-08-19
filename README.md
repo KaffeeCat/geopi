@@ -119,7 +119,7 @@ ret = geopi.search_nearest_poi(lat, lng, topk=10)
 
 ```
 
-输出附近POI数据，fclass为POI类型，name为POI名称，wgs84和gcj为POI在不同坐标系的坐标点,dist为距离查询位置点的距离：
+输出附近POI数据，fclass为POI类型，name为POI名称，wgs84和gcj为POI在不同坐标系的坐标点,dist为距离查询位置点的距离，距离单位为米(Meters)：
 
 ![pois](https://raw.githubusercontent.com/KaffeeCat/geopi/main/images/pois.png)
 
