@@ -2,18 +2,23 @@ import geopandas as gpd
 from shapely.geometry import shape, Point
 from coord_convert.transform import gcj2wgs, wgs2gcj
 from geopy.distance import geodesic
+import zipfile
 import pyproj
 import json
 import time
 import os
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-CITYDICT_FILE = './data/city_dict.json'
+CITYDICT_FILE = 'data/city_dict.json'
 CITYDICT_FILE = os.path.join(PROJECT_DIR, CITYDICT_FILE)
-BOUNDARY_PATH = './data/city_boundary'
+BOUNDARY_PATH = 'data/city_boundary'
 BOUNDARY_PATH = os.path.join(PROJECT_DIR, BOUNDARY_PATH)
-CITY_SHP_FILE = './data/city_shp/gis_osm_pois_free_1.shp'
-CITY_SHP_FILE = os.path.join(PROJECT_DIR, CITY_SHP_FILE)
+BOUNDARY_ZIPFILE = os.path.join(BOUNDARY_PATH, "city_boundary.zip")
+CITY_SHP_PATH = 'data/city_shp'
+CITY_SHP_PATH = os.path.join(PROJECT_DIR, CITY_SHP_PATH)
+CITY_SHP_NAME = 'china_poi'
+CITY_SHP_FILE = os.path.join(CITY_SHP_PATH, f"{CITY_SHP_NAME}.shp")
+CITY_SHP_ZIPFILE = os.path.join(CITY_SHP_PATH, f"{CITY_SHP_NAME}.zip")
                 
 class GeoPi:
     
@@ -26,6 +31,17 @@ class GeoPi:
         if not os.path.exists(BOUNDARY_PATH):
             os.makedirs(BOUNDARY_PATH)
 
+        # 第一次运行是初始化数据文件
+        if not os.path.exists(CITY_SHP_FILE):
+
+            # 初始化边界文件
+            with zipfile.ZipFile(BOUNDARY_ZIPFILE, 'r') as zip_ref:
+                zip_ref.extractall(BOUNDARY_PATH)
+
+            # 初始化SHP文件
+            with zipfile.ZipFile(CITY_SHP_ZIPFILE, 'r') as zip_ref:
+                zip_ref.extractall(CITY_SHP_PATH)
+
         # 加载所有省的边界数据，用于加速查询
         self.boundary_kv_cache = {}
         for province in self.city_data:
@@ -33,6 +49,7 @@ class GeoPi:
             province_data = self.get_boundary_data(province_code)
             if province_data != None:
                 self.boundary_kv_cache[province_code] = province_data
+
 
         # 创建高德坐标系（GCJ-02）和 WGS84 坐标系的转换对象
         self.gcj_to_wgs = pyproj.Transformer.from_crs(
