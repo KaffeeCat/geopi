@@ -18,10 +18,6 @@ CITY_SHP_FILE = os.path.join(PROJECT_DIR, CITY_SHP_FILE)
 class GeoPi:
     
     def __init__(self):
-    
-        if not os.path.exists(CITYDICT_FILE):
-            # Download city_dict.json from github automatically
-            pass
         
         self.city_data = None
         with open(CITYDICT_FILE, 'r', encoding='utf-8') as f:
@@ -84,15 +80,22 @@ class GeoPi:
 
                         # 判断在下属哪个区县
                         areas = city['areaList']
-                        for area in areas:
-                            area_code = area['code']
-                            if self.is_point_in_region(pt, area_code):
+                        if len(areas) == 0:
+                            return {
+                                'province': [province['name'], province_code],
+                                'city': [city['name'], city_code],
+                                'area': [city['name'], city_code]
+                            }
+                        else:
+                            for area in areas:
+                                area_code = area['code']
+                                if self.is_point_in_region(pt, area_code):
 
-                                return {
-                                    'province': [province['name'], province_code],
-                                    'city': [city['name'], city_code],
-                                    'area': [area['name'], area_code]
-                                    }
+                                    return {
+                                        'province': [province['name'], province_code],
+                                        'city': [city['name'], city_code],
+                                        'area': [area['name'], area_code]
+                                        }
         return None
     
     # 查询经纬度位置附近的POI信息
@@ -116,12 +119,11 @@ class GeoPi:
         gdf['gcj'] = gdf.apply(transform_geometry, axis=1)
 
         # 计算位置点距离每个POI的距离
-        #pt = Point(wgs_lng, wgs_lat)
-        #gdf['dist'] = gdf.wgs84.distance(pt) * 10000
         gdf['dist'] = gdf.wgs84.apply(lambda geom: geodesic((wgs_lat, wgs_lng), (geom.y, geom.x)).meters)
         return gdf.nsmallest(topk, 'dist')
 
 if __name__ == '__main__':
+    
     geopi = GeoPi()
 
     lat, lng = 32.043787, 118.797437
