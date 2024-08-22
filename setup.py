@@ -2,10 +2,10 @@ import setuptools
 
 setuptools.setup(
     name="geopi",
-    version="0.1.7",
-    author="author",
-    author_email="author@example.com",
-    description="A small example package",
+    version="0.1.8",
+    author="Wang Kang",
+    author_email="prince.love@live.cn",
+    description="面向中国的时空位置数据处理工具包",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     url="https://github.com/pypa/sampleproject",

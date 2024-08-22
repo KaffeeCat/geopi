@@ -116,7 +116,7 @@ class GeoPi:
         return None
     
     # 查询经纬度位置附近的POI信息
-    def search_nearest_poi(self, lat, lng, topk=10, delta=0.05):
+    def search_nearest_poi(self, lat, lng, topk=10, delta=0.01):
 
         def transform_geometry(row):
             lat, lng = row.wgs84.y, row.wgs84.x
@@ -130,6 +130,10 @@ class GeoPi:
         bbox = (wgs_lng-delta, wgs_lat-delta, wgs_lng+delta, wgs_lat+delta)
         gdf = gpd.read_file(CITY_SHP_FILE, bbox=bbox)
         gdf = gdf[gdf['name'].notnull()]
+
+        # 如果查询结果为空，则返回空的GeoDataFrame
+        if gdf.shape[0] == 0:
+            return gpd.GeoDataFrame()
 
         # 将 geometry 列转换为 WGS84 坐标系，并转化为 GCJ02 坐标系
         gdf = gdf.rename(columns={'geometry': 'wgs84'})
